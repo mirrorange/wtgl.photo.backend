@@ -21,6 +21,7 @@ api/getPicInf (GET)
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 |title|string|标题|
 |category|string|分类|
 |tag|array\<string\>|标签|
@@ -57,6 +58,7 @@ api/searchPic (POST)
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 |list|array|返回数据|
 
 ##### 返回字段 "list" 子项
@@ -97,6 +99,7 @@ api/changePicInf (POST)
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 
 ## 图片集操作
 
@@ -119,6 +122,7 @@ api/getAlbum (GET)
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 |albname|string|图片集名称|
 |cover|int|封面图片ID|
 |coverurl|string|封面图片Url|
@@ -152,13 +156,14 @@ api/createAlbum (POST)
 
 |字段|必选|类型|说明|
 |----|----|----|----|
-|name|true|string|图片集名称|
+|albname|true|string|图片集名称|
 
 #### 返回
 
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 |albid|int|图片集ID|
 
 ### 删除图片集
@@ -180,6 +185,7 @@ api/removeAlbum (POST)
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 
 ### 设置图片集封面
 
@@ -201,6 +207,7 @@ api/getAlbumCover (POST/GET)
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 
 ### 加入图片集
 
@@ -222,6 +229,7 @@ api/addToAlbum (POST)
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 
 ### 从图片集删除
 
@@ -243,6 +251,7 @@ api/removeFromAlbum (POST)
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 
 ## 用户操作
 
@@ -258,7 +267,7 @@ api/login (POST/GET)
 
 |字段|必选|类型|说明|
 |----|----|----|----|
-|user|true|string|用户名|
+|user_name|true|string|用户名|
 |password|true|string|密码|
 
 #### 返回
@@ -266,8 +275,8 @@ api/login (POST/GET)
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
-|accesstoken|string|用户访问令牌(有效期一天)|
 |message|string|提示信息|
+|access_token|string|用户访问令牌(有效期一天)|
 
 ### 登出
 
@@ -282,6 +291,7 @@ api/logout (GET)
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 
 ### 获取用户信息
 
@@ -296,14 +306,15 @@ api/getUserInf (POST/GET)
 
 |字段|必选|类型|说明|
 |----|----|----|----|
-|user|flase|string|用户名|
+|user_name|flase|string|用户名|
 
 #### 返回
 
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
-|name|string|用户名|
+|message|string|提示信息|
+|user_name|string|用户名|
 |email|string|邮箱|
 |group|string|用户组|
 
@@ -319,7 +330,7 @@ api/register (POST/GET)
 
 |字段|必选|类型|说明|
 |----|----|----|----|
-|user|true|string|用户名|
+|user_name|true|string|用户名|
 |password|true|string|密码|
 |email|true|string|邮箱|
 
@@ -336,20 +347,21 @@ api/register (POST/GET)
 
 #### 调用地址
 
-api/setGroup (GET)
+api/getUserList (GET)
 
 #### 返回
 
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 |list|array|返回结果|
 
 ##### 返回字段 "list" 子项
 
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
-|user|string|用户ID|
+|user_name|string|用户ID|
 |email|string|邮箱|
 |group|int|用户组|
 
@@ -365,7 +377,7 @@ api/setGroup (POST/GET)
 
 |字段|必选|类型|说明|
 |----|----|----|----|
-|user|true|string|用户名|
+|user_name|true|string|用户名|
 |group|true|int|用户权限 0:普通用户 1:图库管理员 2:系统管理员|
 
 #### 返回
@@ -373,6 +385,7 @@ api/setGroup (POST/GET)
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 
 ### 修改密码
 
@@ -387,15 +400,16 @@ api/changePassword (POST/GET)
 
 |字段|必选|类型|说明|
 |----|----|----|----|
-|user|true|string|用户名|
-|oldpassworld|flase|string|旧密码|
-|newpassworld|true|string|旧密码|
+|user_name|true|string|用户名|
+|old_password|flase|string|旧密码|
+|new_password|true|string|新密码|
 
 #### 返回
 
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 
 ## 收藏
 
@@ -418,6 +432,7 @@ api/addFav (POST/GET)
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 
 ### 取消收藏图片
 
@@ -438,6 +453,7 @@ api/removeFav (POST/GET)
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 
 ## 投稿与管理
 
@@ -464,6 +480,7 @@ api/uploadPic (POST)
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 |picid|int|图片ID|
 
 ### 获取投稿列表
@@ -479,6 +496,7 @@ api/getUploadList (GET)
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 |list|array|返回数据|
 
 ##### 返回字段 "list" 子项
@@ -509,6 +527,7 @@ api/getSubmissions (GET)
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 |list|array|返回数据|
 
 ##### 返回字段 "list" 子项
@@ -542,7 +561,7 @@ api/acceptSubmission (POST/GET)
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
-|meaasge|flase|string|说明|
+|message|flase|string|说明|
 
 ### 拒绝投稿
 
@@ -556,13 +575,14 @@ api/cancelSubmission (POST/GET)
 |字段|必选|类型|说明|
 |----|----|----|----|
 |picid|true|array\<int\>|图片ID|
-|meaasge|flase|string|说明|
+|message|flase|string|说明|
 
 #### 返回
 
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
+|message|string|提示信息|
 
 ## 返回代码
 
@@ -570,10 +590,14 @@ api/cancelSubmission (POST/GET)
 |-----|-----|
 |0|成功|
 |-1|未知错误|
+|100|用户不存在|
 |101|需要登录|
-|102|AccessToken已失效|
+|102|Token无效|
 |103|用户权限不足|
 |104|用户名或密码错误|
+|105|用户已存在|
+|106|邮箱已存在|
+|400|参数错误|
 |403|拒绝访问|
 |404|资源不存在|
 |503|请求过快|
