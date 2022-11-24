@@ -28,7 +28,7 @@ api/getPicInf (GET)
 |url|string|图片Url|
 |user|string|投稿用户|
 |by|string|作者|
-|lastupdate|string|最后更新时间|
+|creation_time|string|创建时间|
 |view|int|访问人数|
 |fav|int|收藏人数|
 
@@ -44,12 +44,12 @@ api/searchPic (POST)
 
 |字段|必选|类型|说明|
 |----|----|----|----|
-|sort|true|int|结果排序 0:按更新时间 1:按图片收藏人数|
-|max|false|int|每页最大结果数目，默认为20|
-|page|false|int|页数|
+|sort|flase|int|结果排序 0:按更新时间 1:按图片收藏人数|
+|limit|false|int|最大返回结果数目，默认为20|
+|offset|false|int|从第几条数据开始查询|
 |title|flase|string|图片标题|
 |category|flase|string|分类|
-|tag|false|array\<string\>|标签|
+|tag|false|string|标签|
 |user|false|string|投稿用户|
 |by|false|string|作者|
 
@@ -72,7 +72,7 @@ api/searchPic (POST)
 |url|string|图片Url|
 |user|string|投稿用户|
 |by|string|作者|
-|lastupdate|string|最后更新时间|
+|creation_time|string|创建时间|
 |view|int|访问人数|
 |fav|int|收藏人数|
 
@@ -92,7 +92,7 @@ api/changePicInf (POST)
 |title|flase|string|标题|
 |by|false|string|作者|
 |category|false|string|分类|
-|tag|false|array\<string\>|标签|
+|tag|false|string|标签|
 
 #### 返回
 
@@ -123,26 +123,11 @@ api/getAlbum (GET)
 |----------|--------|--------|
 |code|int|返回代码|
 |message|string|提示信息|
-|albname|string|图片集名称|
+|title|string|图片集标题|
 |cover|int|封面图片ID|
-|coverurl|string|封面图片Url|
+|cover_url|string|封面图片Url|
 |user|string|图片集创建者|
-|list|array|返回数据|
-
-##### 返回字段 "list" 子项
-
-|返回值字段|字段类型|字段说明|
-|----------|--------|--------|
-|picid|int|图片ID|
-|title|string|标题|
-|category|string|分类|
-|tag|array\<string\>|标签|
-|url|string|图片Url|
-|user|string|投稿用户|
-|by|string|作者|
-|lastupdate|string|最后更新时间|
-|view|int|访问人数|
-|fav|int|收藏人数|
+|list|array\<int\>|返回图片集 picid 列表|
 
 ### 创建图片集
 
@@ -156,7 +141,10 @@ api/createAlbum (POST)
 
 |字段|必选|类型|说明|
 |----|----|----|----|
-|albname|true|string|图片集名称|
+|title|true|string|图片集标题|
+|cover|true|int|封面图片ID|
+|description|string|图片集描述|
+|private|bool|是否设为私有|
 
 #### 返回
 
@@ -193,7 +181,7 @@ api/removeAlbum (POST)
 
 #### 调用地址
 
-api/getAlbumCover (POST/GET)
+api/setAlbumCover (POST/GET)
 
 #### 参数
 
@@ -222,7 +210,7 @@ api/addToAlbum (POST)
 |字段|必选|类型|说明|
 |----|----|----|----|
 |albid|true|int|图片集ID|
-|picids|true|array\<int\>|图片ID数组|
+|picid|true|int|图片ID|
 
 #### 返回
 
@@ -244,7 +232,7 @@ api/removeFromAlbum (POST)
 |字段|必选|类型|说明|
 |----|----|----|----|
 |albid|true|int|图片集ID|
-|picids|true|array\<int\>|图片ID数组|
+|picid|true|int|图片ID|
 
 #### 返回
 
@@ -472,7 +460,7 @@ api/uploadPic (POST)
 |title|true|string|标题|
 |by|true|string|作者|
 |category|true|string|分类|
-|tag|true|array\<string\>|标签|
+|tag|true|string|标签|
 |data|true|bytes|图片数据|
 
 #### 返回
@@ -483,45 +471,21 @@ api/uploadPic (POST)
 |message|string|提示信息|
 |picid|int|图片ID|
 
-### 获取投稿列表
+### 获取未通过审核投稿列表
 
-- 获取自己投稿列表 （权限：普通用户）
-
-#### 调用地址
-
-api/getUploadList (GET)
-
-#### 返回
-
-|返回值字段|字段类型|字段说明|
-|----------|--------|--------|
-|code|int|返回代码|
-|message|string|提示信息|
-|list|array|返回数据|
-
-##### 返回字段 "list" 子项
-
-|返回值字段|字段类型|字段说明|
-|----------|--------|--------|
-|picid|int|图片ID|
-|title|string|标题|
-|category|string|分类|
-|tag|array\<string\>|标签|
-|url|string|图片Url|
-|user|string|投稿用户|
-|by|string|作者|
-|lastupdate|string|最后更新时间|
-|status|int|投稿状态 0:待审核 1:已通过 2:已拒绝|
-|massage|string|说明|
-
-### 获取未审核投稿列表
-
-- 获取所有未审核的投稿 （权限：管理员）
+- 获取所有投稿 （权限：管理员）
+- 获取自己的投稿 （权限：普通用户）
 
 #### 调用地址
 
 api/getSubmissions (GET)
 
+#### 参数
+
+|字段|必选|类型|说明|
+|----|----|----|----|
+|status|false|int|指定投稿状态，默认为 0:待审核|
+
 #### 返回
 
 |返回值字段|字段类型|字段说明|
@@ -541,7 +505,9 @@ api/getSubmissions (GET)
 |url|string|图片Url|
 |user|string|投稿用户|
 |by|string|作者|
-|lastupdate|string|最后更新时间|
+|creation_time|string|创建时间|
+|status|int|投稿状态 0:待审核 1:已通过 2:已拒绝|
+|tips|string|管理员信息|
 
 ### 通过投稿
 
@@ -555,27 +521,28 @@ api/acceptSubmission (POST/GET)
 |字段|必选|类型|说明|
 |----|----|----|----|
 |picids|true|int|图片ID|
+|tips|false|int|管理员信息|
 
 #### 返回
 
 |返回值字段|字段类型|字段说明|
 |----------|--------|--------|
 |code|int|返回代码|
-|message|flase|string|说明|
+|message|flase|string|提示信息|
 
 ### 拒绝投稿
 
 - 拒绝指定投稿 （权限：管理员）
 
 ####  调用地址
-api/cancelSubmission (POST/GET)
+api/rejectSubmission (POST/GET)
 
 #### 参数
 
 |字段|必选|类型|说明|
 |----|----|----|----|
-|picid|true|array\<int\>|图片ID|
-|message|flase|string|说明|
+|picid|true|int|图片ID|
+|tips|flase|string|管理员信息|
 
 #### 返回
 
@@ -589,15 +556,15 @@ api/cancelSubmission (POST/GET)
 |代码|说明|
 |-----|-----|
 |0|成功|
-|-1|未知错误|
 |100|用户不存在|
 |101|需要登录|
 |102|Token无效|
 |103|用户权限不足|
 |104|用户名或密码错误|
-|105|用户已存在|
+|105|用户名已存在|
 |106|邮箱已存在|
 |400|参数错误|
 |403|拒绝访问|
 |404|资源不存在|
+|500|服务器内部错误|
 |503|请求过快|

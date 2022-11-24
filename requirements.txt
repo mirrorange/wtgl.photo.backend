@@ -3,3 +3,4 @@ sqlalchemy
 pymysql
 py-emails
 pyjwt
+Pillow

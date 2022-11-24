@@ -1,18 +1,14 @@
 import config
 import jwt
 import time
-import json
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.header import Header
 import sqlalchemy
-from sqlalchemy import Column
-from sqlalchemy import Integer
-from sqlalchemy import String
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-
 
 Base = declarative_base()
 
@@ -20,10 +16,10 @@ Base = declarative_base()
 class Users(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
-    name = Column(String(64), unique=True)
+    name = Column(String(32), unique=True)
     email = Column(String(64), unique=True)
     group = Column(Integer)
-    password = Column(String(64), unique=True)
+    password = Column(String(64))
 
     def __init__(self, name, email, group, password):
         self.name = name
@@ -39,7 +35,11 @@ class User():
         self.sql.connect()
         self.session = sessionmaker(self.sql)()
 
+    def setup(self):
+        Base.metadata.create_all(self.sql)
+
     def close(self):
+        self.session.commit()
         self.session.close()
 
     def sendMail(self, to: str, msg: MIMEMultipart):
@@ -56,7 +56,7 @@ class User():
         msg['To'] = to
         smtp.sendmail(config.SMTP_USER, to, msg.as_bytes())
 
-    def userExist(self, name):
+    def userExist(self, name: str):
         """
         验证用户是否存在
 
@@ -68,7 +68,7 @@ class User():
         else:
             return False
 
-    def emailExist(self,email):
+    def emailExist(self, email: str):
         """
         验证邮箱是否已注册
 
@@ -87,6 +87,8 @@ class User():
         参数:
           token - AccessToken
         """
+        if (token == ""):
+            return {"code": 101, "message": "请先登录"}
         try:
             obj = jwt.decode(token, key=config.SECRET_KEY,
                              algorithms=['HS256'])
@@ -120,7 +122,7 @@ class User():
             payload = {"exp": int(time.time(
             )) + 86400, "type": "access_token", "name": user.name, "group": user.group}
             token = jwt.encode(payload=payload, key=config.SECRET_KEY)
-            return {"code": 0, "message": "登录成功", "access_token": token}
+            return {"code": 0, "message": "OK", "access_token": token}
         else:
             return {"code": 104, "message": "用户名或密码错误"}
 
@@ -137,10 +139,10 @@ class User():
             return user
         if (user["group"] < 2 and user["name"] != name):
             return {"code": 103, "message": "权限不足"}
-        if(not self.userExist(name)):
+        if (not self.userExist(name)):
             return {"code": 100, "message": "用户不存在"}
         u = self.session.query(Users).filter_by(name=name).first()
-        return {"code": 0, "message": "成功", "user_name": u.name, "email": u.email, "group": u.group}
+        return {"code": 0, "message": "OK", "user_name": u.name, "email": u.email, "group": u.group}
 
     def getUserList(self, token: str):
         """
@@ -159,9 +161,9 @@ class User():
         for u in users:
             userarr.append(
                 {"user_name": u.name, "email": u.email, "group": u.group})
-        return {"code": 0, "message": "成功", "list": userarr}
+        return {"code": 0, "message": "OK", "list": userarr}
 
-    def changePassword(self, name, new_password, old_password="", token=""):
+    def changePassword(self, name: str, new_password: str, old_password: str = "", token: str = ""):
         """
         修改用户密码，若缺省 old_password 则必须为系统管理员权限
 
@@ -187,7 +189,7 @@ class User():
             return {"code": 400, "message": "必须具有 old_password 或 access_token 之一"}
         u.update({Users.password: new_password})
         self.session.commit()
-        return {"code": 0, "message": "成功"}
+        return {"code": 0, "message": "OK"}
 
     def setGruop(self, name: str, group: int, token: str):
         """
@@ -208,7 +210,7 @@ class User():
         self.session.query(Users).filter_by(
             name=name).update({Users.group: group})
         self.session.commit()
-        return {"code": 0, "message": "成功"}
+        return {"code": 0, "message": "OK"}
 
     def register(self, name: str, email: str, password: str):
         """
@@ -226,7 +228,7 @@ class User():
         payload = {"exp": int(time.time()) + 86400, "type": "register",
                    "name": name, "email": email, "password": password}
         token = jwt.encode(payload=payload, key=config.SECRET_KEY)
-        confirmUrl = f"http://{config.URL_BASE}/api/userAction?token={token}"
+        confirmUrl = f"{config.URL_BASE}/api/userAction?token={token}"
         msg = MIMEMultipart()
         msg['Subject'] = Header('【梧桐故里】注册新用户验证', 'utf-8').encode()
         msg.attach(MIMEText(
@@ -258,7 +260,7 @@ class User():
                          group=0, password=obj["password"])
             self.session.add(user)
             self.session.commit()
-            return {"code": 0, "message": "注册成功"}
+            return {"code": 0, "message": "OK"}
 
         if (obj["type"] == "setpassword"):
             if (not self.userExist(obj["name"])):
@@ -266,4 +268,4 @@ class User():
             self.session.query(Users).filter_by(name=obj["name"]).update(
                 {Users.password: obj["password"]})
             self.session.commit()
-            return {"code": 0, "message": "修改密码成功"}
+            return {"code": 0, "message": "OK"}
