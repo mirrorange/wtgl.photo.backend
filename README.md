@@ -143,8 +143,8 @@ api/createAlbum (POST)
 |----|----|----|----|
 |title|true|string|图片集标题|
 |cover|true|int|封面图片ID|
-|description|string|图片集描述|
-|private|bool|是否设为私有|
+|description|false|string|图片集描述|
+|private|false|bool|是否设为私有|
 
 #### 返回
 
